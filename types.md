@@ -432,9 +432,226 @@ const whoKnowsNothing = char.knows.bind(Snow, 'nothing');
 whoKnowsNothing('Jon');  // You know nothing, Jon Snow
 ```
 
+#### 'this' keyword
+Understanding the keyword _this_ in JavaScript, and what it is referring to, can be quite complicated at times.
 
+The value of _this_ is usually determined by a functions execution context. Execution context simply means how a function is called.
 
+The keyword _this_ acts as a placeholder, and will refer to whichever object called that method when the method is actually used.
 
+The following list is the ordered rules for determining this. Stop at the first one that applies:
+
+* _new_ binding — When using the _new_ keyword to call a function, _this_ is the newly constructed object.
+```javascript
+function Person(name, age) {
+  this.name = name;
+  this.age =age;
+  console.log(this);
+}
+const Rachel = new Person('Rachel', 30);   // { age: 30, name: 'Rachel' }
+```
+* **Explicit binding** — When call or apply are used to call a function, _this_ is the object that is passed in as the argument.
+Note: _.bind()_ works a little bit differently. It creates a new function that will call the original one with the object that was bound to it.
+```javascript
+function fn() {
+  console.log(this);
+}
+var agent = {id: '007'};
+fn.call(agent);    // { id: '007' }
+fn.apply(agent);   // { id: '007' }
+var boundFn = fn.bind(agent);
+boundFn();         // { id: '007' }
+```
+
+* **Implicit binding** — When a function is called with a context (the containing object), _this_ is the object that the function is a property of.
+This means that a function is being called as a method.
+```javascript
+var building = {
+  floors: 5,
+  printThis: function() {
+    console.log(this);
+  }
+}
+building.printThis();  // { floors: 5, printThis: function() {…} }
+```
+
+* **Default binding** — If none of the above rules applies, _this_ is the global object (in a browser, it’s the window object).
+This happens when a function is called as a standalone function.
+A function that is not declared as a method automatically becomes a property of the global object.
+```javascript
+function printWindow() {
+  console.log(this)
+}
+printWindow();  // window object
+```
+**Note:** This also happens when a standalone function is called from within an outer function scope.
+
+```javascript
+function Dinosaur(name) {
+  this.name = name;
+  var self = this;
+  inner();
+  function inner() {
+    alert(this);        // window object — the function has overwritten the 'this' context
+    console.log(self);  // {name: 'Dino'} — referencing the stored value from the outer context
+  }
+}
+var myDinosaur = new Dinosaur('Dino');
+```
+
+* **Lexical this** — When a function is called with an arrow function _=>_, _this_ receives the _this_ value of its surrounding scope at the time it’s created.
+_this_ keeps the value from its original context.
+```javascript
+function Cat(name) {
+  this.name = name;
+  console.log(this);   // { name: 'Garfield' }
+  ( () => console.log(this) )();   // { name: 'Garfield' }
+}
+var myCat = new Cat('Garfield');
+```
+
+#### Strict Mode
+JavaScript is executed in strict mode by using the _“use strict”_ directive. Strict mode tightens the rules for parsing and error handling on your code.
+
+Some of its benefits are:
+
+* **Makes debugging easier** — Code errors that would otherwise have been ignored will now generate errors, such as assigning to non-writable global or property.
+* **Prevents accidental global variables** — Assigning a value to an undeclared variable will now throw an error.
+* **Prevents invalid use of delete** — Attempts to delete variables, functions and undeletable properties will now throw an error.
+* **Prevents duplicate property names or parameter values** — Duplicated named property in an object or argument in a function will now throw an error. (This is no longer the case in ES6)
+* **Makes eval() safer** — Variables and functions declared inside an _eval()_ statement are not created in the surrounding scope.
+* **“Secures” JavaScript eliminating this coercion** — Referencing a _this_ value of null or undefined is not coerced to the global object. This means that in browsers it’s no longer possible to reference the window object using _this_ inside a function.
+
+#### `new` keyword
+The _new_ keyword invokes a function in a special way. Functions invoked using the _new_ keyword are called constructor functions.
+
+So what does the _new_ keyword actually do?
+
+1.Creates a new object.
+2. Sets the object’s prototype to be the prototype of the constructor function.
+3. Executes the constructor function with this as the newly created object.
+4. Returns the created object. If the constructor returns an object, this object is returned.
+
+```javascript
+// In order to better understand what happens under the hood, lets build the new keyword 
+function myNew(constructor, ...arguments) {
+  var obj = {}
+  Object.setPrototypeOf(obj, constructor.prototype);
+  return constructor.apply(obj, arguments) || obj
+}
+```
+What is the difference between invoking a function with the _new_ keyword and without it?
+
+```javascript
+function Bird() {
+  this.wings = 2;
+}
+/* invoking as a normal function */
+let fakeBird = Bird();
+console.log(fakeBird);    // undefined
+/* invoking as a constructor function */
+let realBird= new Bird();
+console.log(realBird)     // { wings: 2 }
+```
+
+#### Prototype and Inheritance
+Prototype is one of the most confusing concepts in JavaScript and one of the reason for that is because there are two different contexts in which the word **prototype** is used.
+
+* **Prototype relationship**
+Each object has a **prototype** object, from which it inherits all of its prototype’s properties.
+_.__proto__ _ is a non-standard mechanism (available in ES6) for retrieving the prototype of an object (*). It points to the object’s “parent” — the **object’s prototype**. 
+All normal objects also inherit a _.constructor_ property that points to the constructor of the object. Whenever an object is created from a constructor function, the _.__proto__ _ property links that object to the _.prototype_ property of the constructor function used to create it.
+_(*) Object.getPrototypeOf()_ is the standard ES5 function for retrieving the prototype of an object.
+* **Prototype property** 
+Every function has a _.prototype_ property. 
+It references to an object used to attach properties that will be inherited by objects further down the prototype chain. This object contains, by default, a _.constructor_ property that points to the original constructor function. 
+Every object created with a constructor function inherits a constructor property that points back to that function.
+```javascript
+function Dog(breed, name){
+  this.breed = breed,
+  this.name = name
+}
+Dog.prototype.describe = function() {
+  console.log(`${this.name} is a ${this.breed}`)
+}
+const rusty = new Dog('Beagle', 'Rusty');
+
+/* .prototype property points to an object which has constructor and attached 
+properties to be inherited by objects created by this constructor. */
+console.log(Dog.prototype)  // { describe: ƒ , constructor: ƒ }
+
+/* Object created from Dog constructor function */
+console.log(rusty)   //  { breed: "Beagle", name: "Rusty" }
+/* Object inherited properties from constructor function's prototype */
+console.log(rusty.describe())   // "Rusty is a Beagle"
+/* .__proto__ property points to the .prototype property of the constructor function */ 
+console.log(rusty.__proto__)    // { describe: ƒ , constructor: ƒ }
+/* .constructor property points to the constructor of the object */
+console.log(rusty.constructor)  // ƒ Dog(breed, name) { ... }
+```
+
+#### Prototype Chain
+The prototype chain is a series of links between objects that reference one another.
+
+When looking for a property in an object, JavaScript engine will first try to access that property on the object itself.
+
+If it is not found, the JavaScript engine will look for that property on the object it inherited its properties from — the **object’s prototype**.
+
+The engine will traverse up the chain looking for that property and return the first one it finds.
+
+The last object in the chain is the built-in _Object.prototype_, which has _null_ as its prototype. Once the engine reaches this object, it returns _undefined_.
+
+#### Own vs Inherited Properties
+Objects have own properties and inherited properties.
+
+Own properties are properties that were defined on the object.
+
+Inherited properties were inherited through prototype chain.
+
+```javascript
+function Car() { }
+Car.prototype.wheels = 4;
+Car.prototype.airbags = 1;
+
+var myCar = new Car();
+myCar.color = 'black';
+
+/*  Check for Property including Prototype Chain:  */
+console.log('airbags' in myCar)  // true
+console.log(myCar.wheels)        // 4
+console.log(myCar.year)          // undefined
+
+/*  Check for Own Property:  */
+console.log(myCar.hasOwnProperty('airbags'))  // false — Inherited
+console.log(myCar.hasOwnProperty('color'))    // true
+```
+
+**Object.create(obj)** — Creates a new object with the specified **prototype** object and properties.
+```javascript
+var dog = { legs: 4 };
+var myDog = Object.create(dog);
+
+console.log(myDog.hasOwnProperty('legs'))  // false
+console.log(myDog.legs)                    // 4
+console.log(myDog.__proto__ === dog)       // true
+```
+
+#### Inheritance by reference
+An inherited property is a copy by reference of the **prototype object’s** property from which it inherited that property.
+
+If an object’s property is mutated on the prototype, objects which inherited that property will share the same mutation. But if the property is replaced, the change will not be shared.
+
+```javascript
+var objProt = { text: 'original' };
+var objAttachedToProt = Object.create(objProt);
+console.log(objAttachedToProt.text)   // original
+
+objProt.text = 'prototype property changed';
+console.log(objAttachedToProt.text)   // prototype property changed
+
+objProt = { text: 'replacing property' };
+console.log(objAttachedToProt.text)   // prototype property changed
+```
 
 
 
