@@ -19,6 +19,20 @@ typeof null           // object  !!
 typeof Symbol('Hi')   // symbol (New ES6)
 ```
 
+| Type        | typeof           | Primitive?     |
+| ----------- |:----------------:| --------------:|
+| Null        | object           | yes            |
+| Undefined   | undefined        | yes            |
+| Boolean     | boolean          | yes            |
+| String      | string           | yes            |
+| Number      | number           | yes            |
+| Object      | object           | no --an object |
+| Function    | function         | no --an object |
+| Array       | object           | no --an object |
+| Symbol      | symbol           | no --an object |
+| []          | object           | no --an object |
+| {}          | object           | no --an object |
+
 #### Null vs. Undefined
 
 **Undefined** is the absence of a definition. It is used as the default value for uninitialized variables, function arguments that were not provided and missing properties of objects. Functions return _undefined_ when nothing has been explicitly returned.
