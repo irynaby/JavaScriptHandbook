@@ -433,8 +433,6 @@ whoKnowsNothing('Jon');  // You know nothing, Jon Snow
 ```
 
 ### 'this' keyword
-Understanding the keyword _this_ in JavaScript, and what it is referring to, can be quite complicated at times.
-
 The value of _this_ is usually determined by a functions execution context. Execution context simply means how a function is called.
 
 The keyword _this_ acts as a placeholder, and will refer to whichever object called that method when the method is actually used.
@@ -653,9 +651,102 @@ objProt = { text: 'replacing property' };
 console.log(objAttachedToProt.text)   // prototype property changed
 ```
 
+### Classical Inheritance vs. Prototypal Inheritance
+In classical inheritance, objects inherit from classes — like a blueprint or a description of the object to be created — and create sub-class relationships. These objects are created via constructor functions using the new keyword.
 
+The downside of classical inheritance is that it causes:
+inflexible hierarchy
+tight coupling problems
+fragile base class problems
+duplication problems
+And the so famous gorilla/banana problem — _“What you wanted was a banana, what you got was a gorilla holding the banana, and the entire jungle.”_
+
+In prototypal inheritance, objects inherit directly from other objects. Objects are typically created via _Object.create()_, object literals or factory functions.
+
+There are three different kinds of prototypal inheritance:
+
+* **Prototype delegation** — A delegate prototype is an object which is used as a model for another object. When you inherit from a delegate prototype, the new object gets a reference to the prototype and its properties. 
+This process is usually accomplished by using _Object.create()_.
+* **Concatenative inheritance** — The process of inheriting properties from one object to another by copying the object’s prototype properties, without retaining a reference between them. 
+This process is usually accomplished by using Object.assign().
+* **Functional inheritance** — This process makes use of a factory function(*) to create an object, and then adds new properties directly to the created object. 
+This process has the benefit of allowing data encapsulation via closure.
+**(*)Factory function** is a function that is not a class or constructor that returns an object without using the new keyword.
 
 ```javascript
-
+const person = function(name) {
+  const message = `Hello! My name is ${name}`;
+  return { greeting: () => console.log(message) }
+}
+const will = person("Will");
+will.greeting();     // Hello! My name is Will
 ```
+You can find a complete article on this topic by Eric Elliott [here](https://medium.com/javascript-scene/master-the-javascript-interview-what-s-the-difference-between-class-prototypal-inheritance-e4cd0a7562e9).
+
+
+#### Favor composition over class inheritance
+Many developers agree that class inheritance should be avoided in most cases. In this pattern you design your types regarding what they **are**, which makes it a very strict pattern.
+
+Composition, on the other hand, you design your types regarding what they **do**, which makes it more flexible and reusable.
+
+Here is a nice video on this topic by Mattias Petter Johansson
+[video](https://youtu.be/wfMtDGfHWpA)
+
+### Asynchronous JavaScript
+JavaScript is a single-threaded programming language. This means that the JavaScript engine can only process a piece of code at a time. One of its main consequences is that when JavaScript encounters a piece of code that takes a long time to process, it will block all code after that from running.
+
+JavaScript uses a data structure that stores information about active functions named **Call Stack**. A Call Stack is like a pile of books. Every book that goes into that pile sits on top of the previous book. The last book to go into the pile will be the first one removed from it, and the first book added to the pile will be the last one removed.
+
+The solution to executing heavy pieces of code without blocking anything is **asynchronous callback functions**. These functions are executed later — **asynchronously**.
+
+The asynchronous process begins with an asynchronous callback functions placed into a **Heap or** region of memory. You can think of the Heap as an **Event Manager**. The Call Stack asks the Event Manager to execute a specific function only when a certain event happens. Once that event happens, the Event Manager moves the function to the Callback Queue. **Note:** When the Event Manager handles a function, the code after that is not blocked and JavaScript continues its execution.
+
+The Event Loop handles the execution of multiple pieces of your code over time. The Event Loop monitors the Call Stack and the Callback Queue.
+
+The Call Stack is constantly checked whether it is empty or not. When it is empty, the Callback Queue is checked if there is a function waiting to be invoked. When there is a function waiting, the first function in the queue is pushed into the Call Stack, which will run it. This checking process is called a ‘tick’ in the Event Loop.
+
+Let’s break down the execution of the following code to understand how this process works:
+```javascript
+const first = function () {
+  console.log('First message')
+}
+const second = function () {
+  console.log('Second message')
+}
+const third = function() {
+  console.log('Third message')
+}
+
+first();
+setTimeout(second, 0);
+third();
+
+// Output:
+  // First message
+  // Third message
+  // Second message
+```
+
+1. Initially the Browser console is clear and the Call Stack and Event Manager are empty.
+2. _first()_ is added to the Call Stack.
+3. _console.log("First message")_ is added to the Call Stack.
+4. _console.log("First message")_ is executed and the Browser console displays **“First message”**.
+5. _console.log("First message")_ is removed from the Call Stack.
+6. _first()_ is remove from the Call Stack.
+7. _setTimeout(second, 0)_ is added to the Call Stack.
+8. _setTimeout(second, 0)_ is executed and handled by the Event Manager. And after 0ms the Event Manager moves _second()_ to the Callback Queue.
+9. _setTimeout(second, 0)_ is now completed and removed from the Call Stack.
+10. _third()_ is added to the Call Stack.
+11. _console.log("Third message")_ is added to the Call Stack.
+12. _console.log("Third message")_ is executed and the Browser console displays **“Third message”**.
+13. _console.log("Third message")_ is removed from the Call Stack.
+14. Call Stack is now empty and the _second()_ function is waiting to be invoked in the Callback Queue.
+15. The Event Loop moves _second()_ from the Callback Queue to the Call Stack.
+16. _console.log("Second message")_ is added to the Call Stack.
+17. _console.log("Second message")_ is executed and the Browser console displays **“Second message”**.
+18. _console.log("Second message")_ is removed from the Call Stack.
+19. _second()_ is removed from the Call Stack.
+**Note:** The _second()_ function is not executed after 0ms. The time you pass in to _setTimeout_ function does not relate to the delay of its execution. The Event Manager will wait the given time before moving that function into the Callback Queue. Its execution will only take place on a future ‘tick’ in the Event Loop.
+
+
 Original: [link](https://medium.freecodecamp.org/the-definitive-javascript-handbook-for-a-developer-interview-44ffc6aeb54e)
