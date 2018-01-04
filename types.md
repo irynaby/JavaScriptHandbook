@@ -33,7 +33,7 @@ typeof Symbol('Hi')   // symbol (New ES6)
 | []          | object           | no --an object |
 | {}          | object           | no --an object |
 
-#### Null vs. Undefined
+### Null vs. Undefined
 
 **Undefined** is the absence of a definition. It is used as the default value for uninitialized variables, function arguments that were not provided and missing properties of objects. Functions return _undefined_ when nothing has been explicitly returned.
 
@@ -51,7 +51,7 @@ Boolean([])           // true
 Boolean(function(){}) // true
 ```
 
-#### String & Number coercion
+### String & Number coercion
 The first thing you need to be aware of is the `+` operator. This is a tricky operator because it works for both number addition and string concatenation.
 
 But, the `*, /`  and `-` operators are exclusive for numeric operations. When these operators are used with a string, it forces the string to be coerced to a number.
@@ -71,7 +71,7 @@ null + 1 = 1
 undefined + 1 = NaN
 ```
 
-#### == vs. ===
+### == vs. ===
 It is widely spread that == checks for equality and === checks for equality and type. Well, that is a misconception.
 
 In fact, == checks for equality with coercion and === checks for equality without coercion — strict equality.
@@ -97,7 +97,7 @@ false == {}  // false
 0 == null    // false
 ```
 
-#### Value vs. Reference
+### Value vs. Reference
 Simple values (also known as primitives) are always assigned by value-copy: null, undefined , boolean, number, string and ES6 symbol.
 
 Compound values always create a copy of the reference on assignment: objects, which includes arrays, and functions.
@@ -125,7 +125,7 @@ console.log(copy);        // [1,2,3,4]
 console.log(c === copy);  // false
 ```
 
-#### Scope
+### Scope
 Scope refers to the execution context. It defines the accessibility of variables and functions in the code.
 
 **Global Scope** is the outermost scope. Variables declared outside a function are in the global scope and can be accessed in any other scope. In a browser, the window object is the global scope.
@@ -154,7 +154,7 @@ You may think of Scopes as a series of doors decreasing in size (from biggest to
 
 A tall person that gets stuck on the third door, for example, will have access to all previous doors — **outer scopes** — but not any further doors — **inner scopes**.
 
-#### Hoisting
+### Hoisting
 The behavior of “moving” var and function declarations to the top of their respective scopes during the compilation phase is called **hoisting**.
 
 Function declarations are completely hoisted. This means that a declared function can be called before it is defined.
@@ -196,8 +196,8 @@ _let_ and _const_ are not hoisted.
 }
 ```
 
-#### Function Expression vs. Function Declaration
-###### Function Expression
+### Function Expression vs. Function Declaration
+##### Function Expression
 A Function Expression is created when the execution reaches it and is usable from then on — it is not hoisted.
 ```javascript
 var sum = function(a, b) {
@@ -205,7 +205,7 @@ var sum = function(a, b) {
 }
 ```
 
-###### Function Declaration
+##### Function Declaration
 A Function Declaration can be called both before and after it was defined — it is hoisted.
 
 ```javascript
@@ -214,7 +214,7 @@ function sum(a, b) {
 }
 ```
 
-#### Variables: var, let and const
+### Variables: var, let and const
 Before ES6, it was only possible to declare a variable using _var_. Variables and functions declared inside another function cannot be accessed by any of the enclosing scopes — they are function-scoped.
 
 Variables declared inside a block-scope, such as _if_ statements and _for_ loops, can be accessed from outside of the opening and closing curly braces of the block.
@@ -268,7 +268,7 @@ airplane.passengers = 200;
 console.log(airplane);   // {passengers: 200, wings: 2}
 ```
 
-#### Closure
+### Closure
 A **closure** is the combination of a function and the lexical environment from which it was declared. Closure allows a function to access variables from an enclosing scope — **environment** — even after it leaves the scope in which it was declared.
 
 ```javascript
@@ -349,7 +349,7 @@ for (let i = 0; i < arr.length; i++) {
 }
 ```
 
-#### Immediate Invoked Function Expression (IIFE)
+### Immediate Invoked Function Expression (IIFE)
 An IIFE is a function expression that is called immediately after you define it. It is usually used when you want to create a new variable scope.
 
 The **(surrounding parenthesis)** prevents from treating it as a function declaration.
@@ -386,7 +386,7 @@ Using IIFE:
 **Context** is most often determined by how a function is invoked. It always refers to the value of _this_ in a particular part of your code.
 **Scope** refers to the visibility of variables.
 
-#### Function calls: call, apply and bind
+### Function calls: call, apply and bind
 All of these three methods are used to attach _this_ into function and the difference is in the function invocation.
 
 _.call()_ invokes the function immediately and requires you to pass in arguments as a list (one by one).
@@ -432,7 +432,7 @@ const whoKnowsNothing = char.knows.bind(Snow, 'nothing');
 whoKnowsNothing('Jon');  // You know nothing, Jon Snow
 ```
 
-#### 'this' keyword
+### 'this' keyword
 Understanding the keyword _this_ in JavaScript, and what it is referring to, can be quite complicated at times.
 
 The value of _this_ is usually determined by a functions execution context. Execution context simply means how a function is called.
@@ -510,7 +510,7 @@ function Cat(name) {
 var myCat = new Cat('Garfield');
 ```
 
-#### Strict Mode
+### Strict Mode
 JavaScript is executed in strict mode by using the _“use strict”_ directive. Strict mode tightens the rules for parsing and error handling on your code.
 
 Some of its benefits are:
@@ -522,7 +522,7 @@ Some of its benefits are:
 * **Makes eval() safer** — Variables and functions declared inside an _eval()_ statement are not created in the surrounding scope.
 * **“Secures” JavaScript eliminating this coercion** — Referencing a _this_ value of null or undefined is not coerced to the global object. This means that in browsers it’s no longer possible to reference the window object using _this_ inside a function.
 
-#### `new` keyword
+### `new` keyword
 The _new_ keyword invokes a function in a special way. Functions invoked using the _new_ keyword are called constructor functions.
 
 So what does the _new_ keyword actually do?
@@ -554,7 +554,7 @@ let realBird= new Bird();
 console.log(realBird)     // { wings: 2 }
 ```
 
-#### Prototype and Inheritance
+### Prototype and Inheritance
 Prototype is one of the most confusing concepts in JavaScript and one of the reason for that is because there are two different contexts in which the word **prototype** is used.
 
 * **Prototype relationship**
@@ -590,7 +590,7 @@ console.log(rusty.__proto__)    // { describe: ƒ , constructor: ƒ }
 console.log(rusty.constructor)  // ƒ Dog(breed, name) { ... }
 ```
 
-#### Prototype Chain
+### Prototype Chain
 The prototype chain is a series of links between objects that reference one another.
 
 When looking for a property in an object, JavaScript engine will first try to access that property on the object itself.
@@ -601,7 +601,7 @@ The engine will traverse up the chain looking for that property and return the f
 
 The last object in the chain is the built-in _Object.prototype_, which has _null_ as its prototype. Once the engine reaches this object, it returns _undefined_.
 
-#### Own vs Inherited Properties
+### Own vs Inherited Properties
 Objects have own properties and inherited properties.
 
 Own properties are properties that were defined on the object.
@@ -636,7 +636,7 @@ console.log(myDog.legs)                    // 4
 console.log(myDog.__proto__ === dog)       // true
 ```
 
-#### Inheritance by reference
+### Inheritance by reference
 An inherited property is a copy by reference of the **prototype object’s** property from which it inherited that property.
 
 If an object’s property is mutated on the prototype, objects which inherited that property will share the same mutation. But if the property is replaced, the change will not be shared.
