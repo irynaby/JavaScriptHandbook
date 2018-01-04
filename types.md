@@ -1,5 +1,4 @@
 ## Types & Coercion
-=======
 
 There are 7 built-in types: 
 _null, 
@@ -368,10 +367,64 @@ Using IIFE:
 * Creates fresh environments.
 * Avoids polluting the global namespace.
 
+### Context
+**Context** is often confused as the same thing as Scope. To clear things up, lets keep the following in mind:
+**Context** is most often determined by how a function is invoked. It always refers to the value of _this_ in a particular part of your code.
+**Scope** refers to the visibility of variables.
+
+#### Function calls: call, apply and bind
+All of these three methods are used to attach _this_ into function and the difference is in the function invocation.
+
+_.call()_ invokes the function immediately and requires you to pass in arguments as a list (one by one).
+
+_.apply()_ invokes the function immediately and allows you to pass in arguments as an array.
+
+_.call()_ and _.apply()_ are mostly equivalent and are used to borrow a method from an object. Choosing which one to use depends on which one is easier to pass the arguments in. Just decide whether it’s easier to pass in an array or a comma separated list of arguments.
+
+_Quick tip: Apply for Array — Call for Comma._
+
+```javascript
+const Snow = {surename: 'Snow'}
+const char = {
+  surename: 'Stark',
+  knows: function(arg, name) {
+    console.log(`You know ${arg}, ${name} ${this.surename}`);
+  }
+}
+char.knows('something', 'Bran');              // You know something, Bran Stark
+char.knows.call(Snow, 'nothing', 'Jon');      // You know nothing, Jon Snow
+char.knows.apply(Snow, ['nothing', 'Jon']);   // You know nothing, Jon Snow
+```
+**Note:** If you pass in an array as one of the arguments on a call function, it will treat that entire array as a single element. 
+ES6 allows us to spread an array as arguments with the call function.
+
+```javascript
+char.knows.call(Snow, ...["nothing", "Jon"]);  // You know nothing, Jon Snow
+```
+
+_.bind()_ returns a new function, with a certain context and parameters. It is usually used when you want a function to be called later with a certain context.
+
+That is possible thanks to its ability to maintain a given context for calling the original function. This is useful for asynchronous callbacks and events.
+
+_.bind()_ works like the call function. It requires you to pass in the arguments one by one separated by a comma.
+```javascript
+const Snow = {surename: 'Snow'}
+const char = {
+  surename: 'Stark',
+  knows: function(arg, name) {
+    console.log(`You know ${arg}, ${name} ${this.surename}`);}
+  }
+const whoKnowsNothing = char.knows.bind(Snow, 'nothing');
+whoKnowsNothing('Jon');  // You know nothing, Jon Snow
+```
+
+
+
+
+
 
 
 ```javascript
 
 ```
-
 Original: [link](https://medium.freecodecamp.org/the-definitive-javascript-handbook-for-a-developer-interview-44ffc6aeb54e)
